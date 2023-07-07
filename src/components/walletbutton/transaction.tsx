@@ -5,7 +5,8 @@ import { clusterApiUrl, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey 
 import { FC, useCallback, useState } from 'react';
 
 import { Connection } from '@solana/web3.js';
-
+import {toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 let thelamports = 0;
 let theWallet = "DbcPKdcAZLPZ4NLXJTTeNDkG2yipmWXdFxJVHbN832Fz"
@@ -50,12 +51,42 @@ const SendSol: FC = () => {
             })
         );
 
-        const signature = await sendTransaction(transaction, connection);
+        try{
+            const signature = await sendTransaction(transaction, connection);
+            await connection.confirmTransaction(signature, 'processed').then((message)=>{
+                console.log(message)
+                toast.success('Transaction Success!', {
+                    position: "top-right",
+                    autoClose: 7000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    });
+            });
+        }
+        catch(error){
+            console.log(error)
+            toast.error('Transaction Failed!', {
+                position: "top-right",
+                autoClose: 7000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                });
+        }
 
-        await connection.confirmTransaction(signature, 'processed').then((message)=>{
-            console.log(message)
-            
-        });
+        
+        
+
+        
+
+        
     }, [publicKey, sendTransaction, connection]);
 
     
