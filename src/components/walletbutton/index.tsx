@@ -5,7 +5,7 @@ import {
 function WalletBox(){
     return(
         <div className='flex justify-between flex-col items-center'>
-            <div> this is a pop box</div>
+            <div> this will be a side bar or popbox</div>
             <WalletMultiButton />
 
         </div>

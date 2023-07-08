@@ -1,8 +1,10 @@
 import {  WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useWallet } from '@solana/wallet-adapter-react';
 
+
+
 import { clusterApiUrl, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import { Connection } from '@solana/web3.js';
 import {toast } from 'react-toastify';
@@ -11,34 +13,43 @@ import 'react-toastify/dist/ReactToastify.css';
 let thelamports = 0;
 let theWallet = "DbcPKdcAZLPZ4NLXJTTeNDkG2yipmWXdFxJVHbN832Fz"
 
-
-
 const SendSol: FC = () => {
-    let [lamports, setLamports] = useState(.1);
+    let [lamports, setLamports] = useState(.001);
+    const [currentBalance, setBalance] = useState(0);
     // let [wallet, setWallet] = useState("DbcPKdcAZLPZ4NLXJTTeNDkG2yipmWXdFxJVHbN832Fz");
+    /*  for later use */
 
     // const { connection } = useConnection();
-    const connection = new Connection(clusterApiUrl("devnet"))
+    const connection = new Connection(clusterApiUrl("testnet"),'confirmed')
     const { publicKey, sendTransaction } = useWallet();
 
-    const onSendRequest = (e:any) => {
+    useEffect(() => {
+        if (!connection || !publicKey) return
+        else {
+            connection.getAccountInfo(publicKey).then(info => {
+                setBalance(info? info.lamports:0)
+                console.log("current account balance: ",currentBalance)
+            })
+        }
+    },[connection,publicKey])
 
-        console.log(Number(e.target.value));
-        setLamports(Number(e.target.value));
-        lamports = e.target.value;
-        thelamports = lamports;
+    /* const onUpdateBalance = useCallback( async () => {
+        if (!publicKey || !connection){
+            // throw new WalletNotConnectedError();
+            return
+        } 
 
-        onClickSend()
-    }
- 
+        await connection.getAccountInfo(publicKey)
+        .then(info => {
+            console.log('account info retrieved: ', info)
+            setBalance(prevBal => info? info.lamports:prevBal)
+        })
+        
+    },[publicKey,connection]) */
 
     const onClickSend = useCallback( async () => {
 
         if (!publicKey) throw new WalletNotConnectedError();
-        connection.getBalance(publicKey).then((bal) => {
-            console.log(bal/LAMPORTS_PER_SOL);
-
-        });
 
         let lamportsI = LAMPORTS_PER_SOL*lamports;
         console.log(publicKey.toBase58());
@@ -51,9 +62,16 @@ const SendSol: FC = () => {
             })
         );
 
+        const {
+            context: { slot: minContextSlot },
+            value: { blockhash, lastValidBlockHeight }
+        } = await connection.getLatestBlockhashAndContext();
+
+
+
         try{
-            const signature = await sendTransaction(transaction, connection);
-            await connection.confirmTransaction(signature, 'processed').then((message)=>{
+            const signature = await sendTransaction(transaction, connection,{minContextSlot});
+            await connection.confirmTransaction({blockhash,lastValidBlockHeight,signature}).then((message)=>{
                 console.log(message)
                 toast.success('Transaction Success!', {
                     position: "top-right",
@@ -65,7 +83,15 @@ const SendSol: FC = () => {
                     progress: undefined,
                     theme: "colored",
                     });
+
             });
+            await connection.getAccountInfo(publicKey)
+            .then(info => {
+                console.log('account info retrieved: ', info)
+                setBalance(prevBal => info? info.lamports:0)
+                console.log("cur balance change to: ",currentBalance)
+            })
+            
         }
         catch(error){
             console.log(error)
@@ -80,13 +106,7 @@ const SendSol: FC = () => {
                 theme: "colored",
                 });
         }
-
-        
-        
-
-        
-
-        
+       
     }, [publicKey, sendTransaction, connection]);
 
     
@@ -99,13 +119,24 @@ const SendSol: FC = () => {
     }
 
     return (
-        <div>
-            <div>
-                Nah this no navbar
+        <div className='bg-[#fff] flex flex-col items-center justify-between gap-4 mt-4 border-4 border-violet-600 pb-4 rounded-[5px]'>
+            <div className='font-bold leading-6 text-[20px] w-full border-b-4 border-violet-600 p-4 bg-violet-600 text-[#ffffff]'>
+                Test Section for SOL transaction
             </div>
-            <input value={lamports} type="number" onChange={(e) => setTheLamports(e)}></input>
-            <br></br>
-            <button className='btn' onClick={onClickSend}>Send Sol </button>
+            <div className='flex flex-col items-start justify-between gap-4 pb-4 '>
+                <div className='flex flex-col gap-3'>
+                    <div className='font-bold text-violet-500'>
+                        Input Valid Amount of SOLs
+                    </div>
+                    <input value={lamports} type="number" onChange={(e) => setTheLamports(e)}></input>
+                </div>
+                
+                <button className='px-3 py-[6px] rounded-[5px] font-bold text-[white] bg-violet-600' onClick={onClickSend}>Send Sol </button>
+            </div>
+            <div className='font-semibold text-violet-500 w-[208px] text-left'>
+                Current SOL Balance: {currentBalance}
+            </div>
+            
         </div>
     );
 };
