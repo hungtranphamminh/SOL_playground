@@ -11,6 +11,10 @@ import { Connection } from '@solana/web3.js';
 import {toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+
+import { selectAccountBalance, updateWalletBalance } from '../../store/slices/accountSlice';
+
 let thelamports = 0;
 
 /*  
@@ -20,21 +24,23 @@ let thelamports = 0;
 let theWallet = "DbcPKdcAZLPZ4NLXJTTeNDkG2yipmWXdFxJVHbN832Fz"      
 
 const SendSol: FC = () => {
-    let [lamports, setLamports] = useState(.001);
-    const [currentBalance, setBalance] = useState(0);
-    // let [wallet, setWallet] = useState("DbcPKdcAZLPZ4NLXJTTeNDkG2yipmWXdFxJVHbN832Fz");
-    /*  for later use */
 
-    // const { connection } = useConnection();
+    const currentWalletBalance = useAppSelector(selectAccountBalance)
+    const dispatch = useAppDispatch()
+
+
+    let [lamports, setLamports] = useState(.001);
+
     const connection = new Connection(clusterApiUrl("testnet"),'confirmed')
     const { publicKey, sendTransaction, connected } = useWallet();
 
     useEffect(() => {
         if (!connection || !publicKey) return
         else {
+            console.log("current connection is: ",connection)
             connection.getAccountInfo(publicKey).then(info => {
-                setBalance(info? info.lamports:0)
-                console.log("current account balance: ",currentBalance)
+                // dispatch(changeToAmount(currentBalance))
+                dispatch(updateWalletBalance(info?info.lamports:currentWalletBalance))
             })
         }
     },[connection,publicKey])
@@ -81,8 +87,7 @@ const SendSol: FC = () => {
             await connection.getAccountInfo(publicKey)
             .then(info => {
                 console.log('account info retrieved: ', info)
-                setBalance(prevBal => info? info.lamports:0)
-                console.log("cur balance change to: ",currentBalance)
+                dispatch(updateWalletBalance(info?info.lamports:currentWalletBalance))
             })
             
         }
@@ -111,6 +116,7 @@ const SendSol: FC = () => {
         thelamports = lamports;
     }
 
+
     return connected?(
         <div className='bg-[#fff] flex flex-col items-start justify-between gap-4 mt-4 border-4 border-violet-600 pb-4 rounded-[5px]'>
             <div className='font-bold leading-6 text-[20px] w-full border-b-4 border-violet-600 p-4 bg-violet-600 text-[#ffffff]'>
@@ -127,7 +133,7 @@ const SendSol: FC = () => {
                 <button className='px-3 py-[6px] rounded-[5px] font-bold text-[white] bg-violet-600' onClick={onClickSend} disabled={!publicKey}>Send Sol </button>
             </div>
             <div className='font-semibold text-violet-500 w-[208px] text-left px-4'>
-                Current SOL Balance: {currentBalance}
+                Current SOL Balance: {currentWalletBalance}
             </div>
             
         </div>

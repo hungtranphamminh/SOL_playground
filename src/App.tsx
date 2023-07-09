@@ -20,7 +20,7 @@ function App() {
           <div className='w-[20%]'>
             <LeftNav />
           </div>
-          <div className='w-[60%]'>
+          <div className='w-[55%]'>
             <Routes>
               {/* <div>
                 
