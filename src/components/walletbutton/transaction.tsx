@@ -3,6 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 
 
 
+
 import { clusterApiUrl, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { FC, useCallback, useEffect, useState } from 'react';
 
@@ -11,7 +12,12 @@ import {toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 let thelamports = 0;
-let theWallet = "DbcPKdcAZLPZ4NLXJTTeNDkG2yipmWXdFxJVHbN832Fz"
+
+/*  
+    solflare wallet address - receiver - for testing in testnet only
+
+*/
+let theWallet = "DbcPKdcAZLPZ4NLXJTTeNDkG2yipmWXdFxJVHbN832Fz"      
 
 const SendSol: FC = () => {
     let [lamports, setLamports] = useState(.001);
@@ -21,7 +27,7 @@ const SendSol: FC = () => {
 
     // const { connection } = useConnection();
     const connection = new Connection(clusterApiUrl("testnet"),'confirmed')
-    const { publicKey, sendTransaction } = useWallet();
+    const { publicKey, sendTransaction, connected } = useWallet();
 
     useEffect(() => {
         if (!connection || !publicKey) return
@@ -33,19 +39,6 @@ const SendSol: FC = () => {
         }
     },[connection,publicKey])
 
-    /* const onUpdateBalance = useCallback( async () => {
-        if (!publicKey || !connection){
-            // throw new WalletNotConnectedError();
-            return
-        } 
-
-        await connection.getAccountInfo(publicKey)
-        .then(info => {
-            console.log('account info retrieved: ', info)
-            setBalance(prevBal => info? info.lamports:prevBal)
-        })
-        
-    },[publicKey,connection]) */
 
     const onClickSend = useCallback( async () => {
 
@@ -118,12 +111,12 @@ const SendSol: FC = () => {
         thelamports = lamports;
     }
 
-    return (
-        <div className='bg-[#fff] flex flex-col items-center justify-between gap-4 mt-4 border-4 border-violet-600 pb-4 rounded-[5px]'>
+    return connected?(
+        <div className='bg-[#fff] flex flex-col items-start justify-between gap-4 mt-4 border-4 border-violet-600 pb-4 rounded-[5px]'>
             <div className='font-bold leading-6 text-[20px] w-full border-b-4 border-violet-600 p-4 bg-violet-600 text-[#ffffff]'>
                 Test Section for SOL transaction
             </div>
-            <div className='flex flex-col items-start justify-between gap-4 pb-4 '>
+            <div className='flex flex-col items-start justify-between gap-4 pb-4 px-4'>
                 <div className='flex flex-col gap-3'>
                     <div className='font-bold text-violet-500'>
                         Input Valid Amount of SOLs
@@ -131,14 +124,16 @@ const SendSol: FC = () => {
                     <input value={lamports} type="number" onChange={(e) => setTheLamports(e)}></input>
                 </div>
                 
-                <button className='px-3 py-[6px] rounded-[5px] font-bold text-[white] bg-violet-600' onClick={onClickSend}>Send Sol </button>
+                <button className='px-3 py-[6px] rounded-[5px] font-bold text-[white] bg-violet-600' onClick={onClickSend} disabled={!publicKey}>Send Sol </button>
             </div>
-            <div className='font-semibold text-violet-500 w-[208px] text-left'>
+            <div className='font-semibold text-violet-500 w-[208px] text-left px-4'>
                 Current SOL Balance: {currentBalance}
             </div>
             
         </div>
-    );
+    ) : (
+    <div>Wallet not connected yet</div>
+    )
 };
 
 
