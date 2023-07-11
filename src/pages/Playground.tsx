@@ -1,6 +1,10 @@
 // import WalletBox from "../components/walletbutton"
+import LeftNav from "../components/leftnav/LeftNav"
+import RightBar from "../components/rightinfo/RightBar"
 import { RequestAirdrop } from "../components/walletbutton/RequestAirdrop"
-import SendSol from "../components/walletbutton/transaction"
+import SendSol from "../components/walletbutton/SendTransaction"
+import { SignMessage } from "../components/walletbutton/SignMessage"
+import { SignTransaction } from "../components/walletbutton/SignTransaction"
 /* 
 import { useAppDispatch, useAppSelector } from "../store/hooks"
 import { decrement,increment } from "../store/counterSlice" */
@@ -11,30 +15,33 @@ function Playground(){
     const dispatch = useAppDispatch() */
 
     return (
-        <div className="flex flex-col gap-4">
-            
-            {//test redux here
-            /* <div className="font-bold text-[20px] text-violet-600">
-                    Testing redux here: {count}
+        <div className="flex justify-between">
+            <div className='w-[20%]'>
+                <LeftNav />
             </div>
-            <button aria-label="Increment Value" onClick={()=>dispatch(increment())}>
-                increase value by 1
-            </button>
-            <button aria-label="Decrement Value" onClick={()=>dispatch(decrement())}>
-                decrease value by 1
-            </button> */}
+            <div className="flex flex-col gap-4">
 
-
-            <div className="pl-5 font-bold text-[30px] mt-4 text-violet-700">
-                Solana Wallet Playground
+                <div className="pl-5 font-bold text-[30px] mt-4 text-violet-700">
+                    Solana Wallet Playground
+                </div>
+                <div className='flex w-full flex-col items-center'>
+                    <SendSol />
+                </div>
+                <div className="flex w-full flex-col items-center">
+                    <RequestAirdrop />
+                </div>
+                <div className="flex w-full flex-col items-center">
+                    <SignTransaction />
+                </div>
+                <div className="flex w-full flex-col items-center">
+                    <SignMessage />
+                </div>
             </div>
-            <div className='flex w-full flex-col items-center'>
-                <SendSol />
-              </div>
-            <div className="flex w-full flex-col items-center">
-                <RequestAirdrop />
+            <div className="w-[30%]">
+                <RightBar />
             </div>
         </div>
+        
     )
 }
 

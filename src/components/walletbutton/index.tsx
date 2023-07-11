@@ -6,6 +6,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { updateAccount, disconnectWallet, selectAccountBalance } from '../../store/slices/accountSlice';
 import { useEffect } from 'react';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 function WalletBox(){
     const {connected,publicKey} = useWallet()
@@ -52,7 +53,7 @@ function WalletBox(){
                         Adress: {walletAccount.address}
                     </div>
                     <div>
-                        Balance: {walletAccountBalance}
+                        Balance: {walletAccountBalance/LAMPORTS_PER_SOL}
                     </div>
                 </div>
                 }

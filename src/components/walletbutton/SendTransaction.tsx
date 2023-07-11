@@ -70,6 +70,7 @@ const SendSol: FC = () => {
 
         try{
             const signature = await sendTransaction(transaction, connection,{minContextSlot});
+
             await connection.confirmTransaction({blockhash,lastValidBlockHeight,signature}).then((message)=>{
                 console.log(message)
                 toast.success('Transaction Success!', {
@@ -133,7 +134,7 @@ const SendSol: FC = () => {
                 <button className='px-3 py-[6px] rounded-[5px] font-bold text-[white] bg-violet-600' onClick={onClickSend} disabled={!publicKey}>Send Sol </button>
             </div>
             <div className='font-semibold text-violet-500 w-[208px] text-left px-4'>
-                Current SOL Balance: {currentWalletBalance}
+                Current SOL Balance: {currentWalletBalance/LAMPORTS_PER_SOL}
             </div>
             
         </div>

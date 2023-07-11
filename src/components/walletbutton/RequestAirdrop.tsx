@@ -54,14 +54,35 @@ export const RequestAirdrop: FC = () => {
                 console.log("airdrop successfull")
                 }
             )
-            toast.update(id, { render: "Airdrop Successful!", type: "success", isLoading: false });
+            toast.update(id, {
+                 render: "Airdrop Successful!",
+                  type: "success",
+                  isLoading: false,
+                  autoClose: 7000,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+ 
+                });
             await connection.getAccountInfo(publicKey)
             .then(info => {
                 console.log('account info retrieved - airdrop: ', info)
                 dispatch(updateWalletBalance(info?info.lamports:currentWalletBalance))
             })
         } catch (error:any) {
-            console.log("error :",error)
+            const jsonError = JSON.parse(error.message.slice(7))
+            console.log(jsonError)
+            toast.error(`Airdrop Failed! ${jsonError.error.message}`, {
+                position: "top-right",
+                autoClose: 7000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                });
+            
         }
     },[publicKey,connection])
 

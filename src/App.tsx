@@ -10,46 +10,24 @@ import {Route, Routes, Link} from "react-router-dom"
 import Playground from './pages/Playground';
 import RightBar from './components/rightinfo/RightBar';
 import LeftNav from './components/leftnav/LeftNav';
+import BuildPage from './pages/Build';
+import HomePage from './pages/HomePage';
 
 function App() {
   return (
-    <>
+    <div >
+      <div>
+        yes this to test ssticky
+      </div>
       <HeaderBar />
       <Wallet>
-        <div className='flex flex-row gap-0'>
-          <div className='w-[20%]'>
-            <LeftNav />
-          </div>
-          <div className='w-[55%]'>
+          <div className='w-[100%]'>
             <Routes>
-              {/* <div>
-                
-                <Wallet>
-                  <div className='flex w-full flex-col items-center'>
-                    <WalletBox />
-                    <SendSol />
-                  </div>
-                </Wallet>
-                <ToastContainer
-                  position="top-right"
-                  autoClose={7000}
-                  hideProgressBar={false}
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme="colored"
-                />
-              </div> */}
+              <Route path='/build' element={<BuildPage />} />
               <Route path='/playground' element={<Playground/>}/>
+              <Route path='/homepage' element={<HomePage/>}/>
             </Routes>
-          </div>
-          <RightBar />
-
-        </div>
-        
+          </div>        
       </Wallet>
       <ToastContainer
               position="top-right"
@@ -63,7 +41,7 @@ function App() {
               pauseOnHover
               theme="colored"
             />
-    </>
+    </div>
 
   );
 }
